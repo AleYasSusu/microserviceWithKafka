@@ -2,6 +2,7 @@ package com.aledev.springbootrestfulmicroservices.service.impl;
 
 import com.aledev.springbootrestfulmicroservices.DTO.UserDto;
 import com.aledev.springbootrestfulmicroservices.entity.User;
+import com.aledev.springbootrestfulmicroservices.exception.EmailAlreadyExistsException;
 import com.aledev.springbootrestfulmicroservices.exception.ResourceNotFoundException;
 import com.aledev.springbootrestfulmicroservices.mapper.AutoUserMapper;
 import com.aledev.springbootrestfulmicroservices.mapper.UserMapper;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -21,7 +23,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
-        User user = UserMapper.mapToUser(userDto);
+        Optional<User> optionalUser = userRepository.findByEmail(userDto.getEmail());
+        if (optionalUser.isPresent()){
+            throw  new EmailAlreadyExistsException("Email already exisrs for user.");
+        }
+
+        User user = AutoUserMapper.MAPPER.mapToUser(userDto);
         User savedUser = userRepository.save(user);
         return AutoUserMapper.MAPPER.mapToUserDto(savedUser);
 
