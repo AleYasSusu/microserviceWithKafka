@@ -1,13 +1,8 @@
 package com.aledev.springbootrestfulmicroservices.DTO;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.*;
 
 @Getter
 @Setter
@@ -16,7 +11,14 @@ import lombok.Setter;
 public class UserDto {
 
     private Long id;
+
+    @NotEmpty(message = "User first name should not be null or empty.")
     private String firsName;
+
+    @NotEmpty(message = " User last name should not be null or empty.")
     private String lastName;
+
+    @Email(message = "Email address should not be valid.")
+    @NotEmpty(message = "User Email should not be null or empty.")
     private String email;
 }

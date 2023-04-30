@@ -1,27 +1,22 @@
 package com.aledev.springbootrestfulmicroservices.controller;
 
 import com.aledev.springbootrestfulmicroservices.DTO.UserDto;
-import com.aledev.springbootrestfulmicroservices.exception.ErrorDetails;
-import com.aledev.springbootrestfulmicroservices.exception.ResourceNotFoundException;
 import com.aledev.springbootrestfulmicroservices.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("api/users")
 @RequiredArgsConstructor
 public class UserController {
-
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto user) {
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto user) {
         UserDto userSaved = userService.createUser(user);
         return new ResponseEntity<>(userSaved, HttpStatus.CREATED);
     }
@@ -39,7 +34,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateUser(@PathVariable("id") Long userId, @RequestBody UserDto user) {
+    public ResponseEntity<Void> updateUser(@PathVariable("id") Long userId, @Valid @RequestBody UserDto user) {
         userService.updateUser(userId, user);
         return ResponseEntity.noContent().build();
     }
@@ -49,16 +44,4 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.ok("User deleted successfully.");
     }
-
-//    @ExceptionHandler(ResourceNotFoundException.class)
-//    public ResponseEntity<ErrorDetails> handleResourceNotFoundException(ResourceNotFoundException exception,
-//                                                                        WebRequest webRequest) {
-//        ErrorDetails errorDetails = new ErrorDetails(
-//                LocalDateTime.now(),
-//                exception.getMessage(),
-//                webRequest.getDescription(false),
-//                "USER_NOT_FOUND"
-//        );
-//        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
-//    }
 }
