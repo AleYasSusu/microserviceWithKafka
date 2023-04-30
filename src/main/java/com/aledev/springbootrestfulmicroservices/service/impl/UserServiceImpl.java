@@ -2,7 +2,7 @@ package com.aledev.springbootrestfulmicroservices.service.impl;
 
 import com.aledev.springbootrestfulmicroservices.DTO.UserDto;
 import com.aledev.springbootrestfulmicroservices.entity.User;
-import com.aledev.springbootrestfulmicroservices.exception.UserNotFoundException;
+import com.aledev.springbootrestfulmicroservices.exception.ResourceNotFoundException;
 import com.aledev.springbootrestfulmicroservices.mapper.AutoUserMapper;
 import com.aledev.springbootrestfulmicroservices.mapper.UserMapper;
 import com.aledev.springbootrestfulmicroservices.repository.UserRepository;
@@ -30,8 +30,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto findById(Long id) {
         User userExist = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(
-                        String.format("User with id %d not found", id)));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("User", "id", id));
         return AutoUserMapper.MAPPER.mapToUserDto(userExist);
     }
 
@@ -46,7 +46,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(Long id, UserDto user) {
         User userExisting = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("User", "id", id));
         userExisting.setFirsName(user.getFirsName());
         userExisting.setLastName(user.getLastName());
         userExisting.setEmail(user.getEmail());
@@ -55,8 +56,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+    public void deleteUser(Long userId) {
+        userRepository.findById(userId)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("User", "id", userId));
+        userRepository.deleteById(userId);
     }
 }
 
